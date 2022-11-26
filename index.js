@@ -6,6 +6,7 @@ import { validationResult } from "express-validator";
 
 import { registerValidation } from "./validations/auth.js";
 import UserModel from "./models/user.js";
+import checkAuth from "./utils/checkAuth.js";
 
 mongoose
   .connect(
@@ -25,7 +26,7 @@ app.post("/auth/login", async (req, res) => {
     const user = await UserModel.findOne({ email: req.body.email });
 
     if (!user) {
-      return req.status(404).json({
+      return res.status(404).json({
         message: "Пользователь не найден",
         //использовать в проекте не верный логин или пароль
       });
@@ -33,9 +34,8 @@ app.post("/auth/login", async (req, res) => {
     const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
 
     if (!isValidPass) {
-      return req.status(404).json({
+      return res.status(400).json({
         message: "Неверный логин или пароль",
-        //использовать в проекте не верный логин или пароль
       });
     }
     const token = jwt.sign(
@@ -104,6 +104,11 @@ app.post("/auth/register", registerValidation, async (req, res) => {
       message: "Не удалось зарегестрироваться",
     });
   }
+});
+
+app.get("/auth/me", checkAuth, (req, res) => {
+  try {
+  } catch (error) {}
 });
 
 app.listen(5000, (err) => {
