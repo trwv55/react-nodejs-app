@@ -25,7 +25,7 @@ app.post("/auth/register", registerValidation, UserController.register);
 
 app.get("/auth/me", checkAuth, UserController.getMe);
 
-app.get("/posts/me", checkAuth, UserController.getMe);
+app.post("/posts", PostController.create);
 
 app.listen(5000, (err) => {
   if (err) {
